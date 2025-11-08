@@ -18,13 +18,14 @@ def _inicializar_archivo_productos():
     crear_json_si_no_existe(RUTA_PRODUCTOS, estructura_inicial)
 
 
-def agregar_producto(nombre, precio, stock, categoria):
+def agregar_producto(nombre, precio_costo, precio_venta, stock, categoria):
     """
     Agrega un nuevo producto al inventario
     
     Parámetros:
         nombre (str): Nombre del producto
-        precio (float): Precio del producto
+        precio_costo (float): Precio de costo del producto
+        precio_venta (float): Precio de venta del producto
         stock (int): Cantidad en stock
         categoria (str): Categoría del producto
     
@@ -53,7 +54,8 @@ def agregar_producto(nombre, precio, stock, categoria):
     nuevo_producto = {
         "id": nuevo_id,
         "nombre": nombre,
-        "precio": float(precio),
+        "precio_costo": float(precio_costo),
+        "precio": float(precio_venta),
         "stock": int(stock),
         "categoria": categoria,
         "activo": True,
@@ -153,6 +155,9 @@ def actualizar_producto(id_producto, datos_nuevos):
             # Actualizar campos permitidos
             if "nombre" in datos_nuevos:
                 producto["nombre"] = datos_nuevos["nombre"]
+            
+            if "precio_costo" in datos_nuevos:
+                producto["precio_costo"] = float(datos_nuevos["precio_costo"])
             
             if "precio" in datos_nuevos:
                 producto["precio"] = float(datos_nuevos["precio"])

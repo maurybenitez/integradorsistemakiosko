@@ -25,7 +25,7 @@ def mostrar_inventario():
     # Crear ventana
     ventana = tk.Toplevel()
     ventana.title("Sistema Kiosko - Inventario" + (" (Modo Consulta)" if modo_consulta else ""))
-    ventana.geometry("950x750")
+    ventana.geometry("1000x750")
     ventana.resizable(False, False)
     ventana.configure(bg=constantes.COLOR_FONDO)
     
@@ -116,7 +116,7 @@ def mostrar_inventario():
     scrollbar.pack(side="right", fill="y")
     
     # Tabla (Treeview)
-    columnas = ("ID", "Nombre", "Precio", "Stock", "Categoría", "Estado")
+    columnas = ("ID", "Nombre", "Precio Costo", "Precio Venta", "Stock", "Categoría", "Estado")
     tabla = ttk.Treeview(
         frame_tabla,
         columns=columnas,
@@ -129,19 +129,25 @@ def mostrar_inventario():
     # Configurar columnas
     tabla.heading("ID", text="ID")
     tabla.heading("Nombre", text="Nombre del Producto")
-    tabla.heading("Precio", text="Precio")
+    tabla.heading("Precio Costo", text="Precio Costo")
+    tabla.heading("Precio Venta", text="Precio Venta")
     tabla.heading("Stock", text="Stock")
     tabla.heading("Categoría", text="Categoría")
     tabla.heading("Estado", text="Estado")
     
-    tabla.column("ID", width=50, anchor="center")
-    tabla.column("Nombre", width=250, anchor="w")
-    tabla.column("Precio", width=100, anchor="e")
-    tabla.column("Stock", width=80, anchor="center")
-    tabla.column("Categoría", width=120, anchor="center")
-    tabla.column("Estado", width=80, anchor="center")
+    tabla.column("ID", width=40, anchor="center")
+    tabla.column("Nombre", width=220, anchor="w")
+    tabla.column("Precio Costo", width=90, anchor="e")
+    tabla.column("Precio Venta", width=90, anchor="e")
+    tabla.column("Stock", width=60, anchor="center")
+    tabla.column("Categoría", width=100, anchor="center")
+    tabla.column("Estado", width=70, anchor="center")
     
     tabla.pack(fill="both", expand=True)
+    
+    # Diccionario para guardar referencias de los entries
+    entries = {}
+    entries["id"] = tk.IntVar(value=0)
     
     # Evento de selección en tabla
     tabla.bind("<<TreeviewSelect>>", lambda e: cargar_producto_en_formulario(tabla, entries))
@@ -158,12 +164,6 @@ def mostrar_inventario():
     
     frame_form_interno = tk.Frame(frame_formulario, bg=constantes.COLOR_FONDO)
     frame_form_interno.pack(padx=10, pady=10)
-    
-    # Diccionario para guardar referencias de los entries
-    entries = {}
-
-    # ID (oculto, solo para referencia)
-    entries["id"] = tk.IntVar(value=0)
     
     # Nombre
     label_nombre = tk.Label(frame_form_interno, text="Nombre:", font=("Arial", 10), bg=constantes.COLOR_FONDO)
@@ -382,7 +382,6 @@ def mostrar_inventario():
         entries["categoria"].config(state="disabled")
         entries["ganancia_custom"].config(state="disabled")
 
-
 def aplicar_ganancia(entries, porcentaje):
     """
     Aplica un porcentaje de ganancia al precio costo
@@ -408,7 +407,6 @@ def aplicar_ganancia(entries, porcentaje):
     # Actualizar campo de precio
     entries["precio"].delete(0, tk.END)
     entries["precio"].insert(0, f"{precio_venta:.2f}")
-
 
 def aplicar_ganancia_personalizada(entries):
     """
@@ -450,7 +448,7 @@ def aplicar_ganancia_personalizada(entries):
     # Actualizar campo de precio
     entries["precio"].delete(0, tk.END)
     entries["precio"].insert(0, f"{precio_venta:.2f}")
-    
+
 def cargar_productos_en_tabla(tabla):
     """
     Carga los productos en la tabla
@@ -467,7 +465,8 @@ def cargar_productos_en_tabla(tabla):
     
     # Cargar productos en la tabla
     for producto in productos:
-        precio_formateado = formateadores.formatear_precio(producto["precio"])
+        precio_costo_formateado = formateadores.formatear_precio(producto.get("precio_costo", 0))
+        precio_venta_formateado = formateadores.formatear_precio(producto["precio"])
         estado = "Activo" if producto.get("activo", True) else "Inactivo"
         
         # Color según estado
@@ -479,7 +478,8 @@ def cargar_productos_en_tabla(tabla):
             values=(
                 producto["id"],
                 producto["nombre"],
-                precio_formateado,
+                precio_costo_formateado,
+                precio_venta_formateado,
                 producto["stock"],
                 producto["categoria"],
                 estado
@@ -517,7 +517,8 @@ def buscar_y_actualizar(entry_buscar, tabla):
     
     # Cargar resultados en la tabla
     for producto in productos:
-        precio_formateado = formateadores.formatear_precio(producto["precio"])
+        precio_costo_formateado = formateadores.formatear_precio(producto.get("precio_costo", 0))
+        precio_venta_formateado = formateadores.formatear_precio(producto["precio"])
         estado = "Activo" if producto.get("activo", True) else "Inactivo"
         tag = "activo" if producto.get("activo", True) else "inactivo"
         
@@ -527,7 +528,8 @@ def buscar_y_actualizar(entry_buscar, tabla):
             values=(
                 producto["id"],
                 producto["nombre"],
-                precio_formateado,
+                precio_costo_formateado,
+                precio_venta_formateado,
                 producto["stock"],
                 producto["categoria"],
                 estado
@@ -568,7 +570,7 @@ def cargar_producto_en_formulario(tabla, entries):
     # Cargar datos
     entries["id"].set(producto["id"])
     entries["nombre"].insert(0, producto["nombre"])
-    # Por ahora no tenemos precio_costo guardado, mostramos precio de venta
+    entries["precio_costo"].insert(0, str(producto.get("precio_costo", 0)))
     entries["precio"].insert(0, str(producto["precio"]))
     entries["stock"].insert(0, str(producto["stock"]))
     
@@ -589,18 +591,24 @@ def agregar_producto_ui(entries, tabla):
     """
     # Obtener valores
     nombre = entries["nombre"].get().strip()
-    precio = entries["precio"].get().strip()
+    precio_costo = entries["precio_costo"].get().strip()
+    precio_venta = entries["precio"].get().strip()
     stock = entries["stock"].get().strip()
     categoria = entries["categoria"].get()
     
     # Validar campos vacíos
-    if validadores.campos_vacios(nombre, precio, stock, categoria):
+    if validadores.campos_vacios(nombre, precio_costo, precio_venta, stock, categoria):
         messagebox.showerror("Error", "Complete todos los campos")
         return
     
-    # Validar precio
-    if not validadores.validar_precio(precio):
-        messagebox.showerror("Error", "El precio debe ser un número mayor a 0")
+    # Validar precio costo
+    if not validadores.validar_precio(precio_costo):
+        messagebox.showerror("Error", "El precio de costo debe ser un número mayor a 0")
+        return
+    
+    # Validar precio venta
+    if not validadores.validar_precio(precio_venta):
+        messagebox.showerror("Error", "El precio de venta debe ser un número mayor a 0")
         return
     
     # Validar stock
@@ -609,7 +617,7 @@ def agregar_producto_ui(entries, tabla):
         return
     
     # Agregar producto
-    id_nuevo = inventario.agregar_producto(nombre, float(precio), int(stock), categoria)
+    id_nuevo = inventario.agregar_producto(nombre, float(precio_costo), float(precio_venta), int(stock), categoria)
     
     if id_nuevo:
         messagebox.showinfo("Éxito", f"Producto agregado con ID: {id_nuevo}")
@@ -634,18 +642,24 @@ def modificar_producto_ui(tabla, entries):
     # Obtener valores
     id_producto = entries["id"].get()
     nombre = entries["nombre"].get().strip()
-    precio = entries["precio"].get().strip()
+    precio_costo = entries["precio_costo"].get().strip()
+    precio_venta = entries["precio"].get().strip()
     stock = entries["stock"].get().strip()
     categoria = entries["categoria"].get()
     
     # Validar campos vacíos
-    if validadores.campos_vacios(nombre, precio, stock, categoria):
+    if validadores.campos_vacios(nombre, precio_costo, precio_venta, stock, categoria):
         messagebox.showerror("Error", "Complete todos los campos")
         return
     
-    # Validar precio
-    if not validadores.validar_precio(precio):
-        messagebox.showerror("Error", "El precio debe ser un número mayor a 0")
+    # Validar precio costo
+    if not validadores.validar_precio(precio_costo):
+        messagebox.showerror("Error", "El precio de costo debe ser un número mayor a 0")
+        return
+    
+    # Validar precio venta
+    if not validadores.validar_precio(precio_venta):
+        messagebox.showerror("Error", "El precio de venta debe ser un número mayor a 0")
         return
     
     # Validar stock
@@ -665,7 +679,8 @@ def modificar_producto_ui(tabla, entries):
     # Modificar producto
     datos_nuevos = {
         "nombre": nombre,
-        "precio": float(precio),
+        "precio_costo": float(precio_costo),
+        "precio": float(precio_venta),
         "stock": int(stock),
         "categoria": categoria
     }
@@ -697,7 +712,7 @@ def eliminar_producto_ui(tabla):
     valores = item["values"]
     id_producto = valores[0]
     nombre_producto = valores[1]
-    estado_producto = valores[5]  # "Activo" o "Inactivo"
+    estado_producto = valores[6]  # "Activo" o "Inactivo"
     
     # Determinar acción según el estado
     if estado_producto == "Activo":
