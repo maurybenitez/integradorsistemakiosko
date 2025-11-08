@@ -25,7 +25,7 @@ def mostrar_inventario():
     # Crear ventana
     ventana = tk.Toplevel()
     ventana.title("Sistema Kiosko - Inventario" + (" (Modo Consulta)" if modo_consulta else ""))
-    ventana.geometry(constantes.VENTANA_MODULO)
+    ventana.geometry("950x750")
     ventana.resizable(False, False)
     ventana.configure(bg=constantes.COLOR_FONDO)
     
@@ -122,7 +122,7 @@ def mostrar_inventario():
         columns=columnas,
         show="headings",
         yscrollcommand=scrollbar.set,
-        height=12
+        height=10
     )
     scrollbar.config(command=tabla.yview)
     
@@ -161,7 +161,7 @@ def mostrar_inventario():
     
     # Diccionario para guardar referencias de los entries
     entries = {}
-    
+
     # ID (oculto, solo para referencia)
     entries["id"] = tk.IntVar(value=0)
     
@@ -171,11 +171,11 @@ def mostrar_inventario():
     entries["nombre"] = tk.Entry(frame_form_interno, font=("Arial", 10), width=40)
     entries["nombre"].grid(row=0, column=1, padx=5, pady=5, columnspan=3)
     
-    # Precio
-    label_precio = tk.Label(frame_form_interno, text="Precio:", font=("Arial", 10), bg=constantes.COLOR_FONDO)
-    label_precio.grid(row=1, column=0, sticky="w", padx=5, pady=5)
-    entries["precio"] = tk.Entry(frame_form_interno, font=("Arial", 10), width=15)
-    entries["precio"].grid(row=1, column=1, padx=5, pady=5, sticky="w")
+    # Precio Costo
+    label_precio_costo = tk.Label(frame_form_interno, text="Precio Costo:", font=("Arial", 10), bg=constantes.COLOR_FONDO)
+    label_precio_costo.grid(row=1, column=0, sticky="w", padx=5, pady=5)
+    entries["precio_costo"] = tk.Entry(frame_form_interno, font=("Arial", 10), width=15)
+    entries["precio_costo"].grid(row=1, column=1, padx=5, pady=5, sticky="w")
     
     # Stock
     label_stock = tk.Label(frame_form_interno, text="Stock:", font=("Arial", 10), bg=constantes.COLOR_FONDO)
@@ -183,17 +183,113 @@ def mostrar_inventario():
     entries["stock"] = tk.Entry(frame_form_interno, font=("Arial", 10), width=15)
     entries["stock"].grid(row=1, column=3, padx=5, pady=5, sticky="w")
     
+    # ========== CALCULADORA DE GANANCIA ==========
+    frame_ganancia = tk.LabelFrame(
+        frame_form_interno,
+        text="Calcular Precio de Venta (con ganancia)",
+        font=("Arial", 9, "bold"),
+        bg=constantes.COLOR_FONDO,
+        fg=constantes.COLOR_SECUNDARIO
+    )
+    frame_ganancia.grid(row=2, column=0, columnspan=4, sticky="ew", padx=5, pady=10)
+    
+    frame_ganancia_interno = tk.Frame(frame_ganancia, bg=constantes.COLOR_FONDO)
+    frame_ganancia_interno.pack(padx=10, pady=8)
+    
+    # Botones de porcentaje predeterminado
+    label_predefinidos = tk.Label(
+        frame_ganancia_interno,
+        text="Aplicar ganancia:",
+        font=("Arial", 9),
+        bg=constantes.COLOR_FONDO
+    )
+    label_predefinidos.grid(row=0, column=0, padx=5, pady=2, sticky="w")
+    
+    boton_30 = tk.Button(
+        frame_ganancia_interno,
+        text="30%",
+        font=("Arial", 9, "bold"),
+        bg="#27AE60",
+        fg="white",
+        width=8,
+        cursor="hand2",
+        command=lambda: aplicar_ganancia(entries, 30)
+    )
+    boton_30.grid(row=0, column=1, padx=3, pady=2)
+    
+    boton_40 = tk.Button(
+        frame_ganancia_interno,
+        text="40%",
+        font=("Arial", 9, "bold"),
+        bg="#16A085",
+        fg="white",
+        width=8,
+        cursor="hand2",
+        command=lambda: aplicar_ganancia(entries, 40)
+    )
+    boton_40.grid(row=0, column=2, padx=3, pady=2)
+    
+    boton_50 = tk.Button(
+        frame_ganancia_interno,
+        text="50%",
+        font=("Arial", 9, "bold"),
+        bg="#2980B9",
+        fg="white",
+        width=8,
+        cursor="hand2",
+        command=lambda: aplicar_ganancia(entries, 50)
+    )
+    boton_50.grid(row=0, column=3, padx=3, pady=2)
+    
+    # Porcentaje personalizado
+    label_personalizado = tk.Label(
+        frame_ganancia_interno,
+        text="Personalizado:",
+        font=("Arial", 9),
+        bg=constantes.COLOR_FONDO
+    )
+    label_personalizado.grid(row=1, column=0, padx=5, pady=2, sticky="w")
+    
+    entries["ganancia_custom"] = tk.Entry(frame_ganancia_interno, font=("Arial", 9), width=10)
+    entries["ganancia_custom"].grid(row=1, column=1, padx=3, pady=2, sticky="w")
+    
+    label_porcentaje = tk.Label(
+        frame_ganancia_interno,
+        text="%",
+        font=("Arial", 9),
+        bg=constantes.COLOR_FONDO
+    )
+    label_porcentaje.grid(row=1, column=1, padx=3, pady=2, sticky="e")
+    
+    boton_aplicar_custom = tk.Button(
+        frame_ganancia_interno,
+        text="Aplicar",
+        font=("Arial", 9, "bold"),
+        bg="#8E44AD",
+        fg="white",
+        width=8,
+        cursor="hand2",
+        command=lambda: aplicar_ganancia_personalizada(entries)
+    )
+    boton_aplicar_custom.grid(row=1, column=2, padx=3, pady=2)
+    
+    # Precio de Venta (resultado)
+    label_precio_venta = tk.Label(frame_form_interno, text="Precio Venta:", font=("Arial", 10, "bold"), bg=constantes.COLOR_FONDO, fg=constantes.COLOR_EXITO)
+    label_precio_venta.grid(row=3, column=0, sticky="w", padx=5, pady=5)
+    entries["precio"] = tk.Entry(frame_form_interno, font=("Arial", 11, "bold"), width=15, fg=constantes.COLOR_EXITO)
+    entries["precio"].grid(row=3, column=1, padx=5, pady=5, sticky="w")
+    
     # Categoría
     label_categoria = tk.Label(frame_form_interno, text="Categoría:", font=("Arial", 10), bg=constantes.COLOR_FONDO)
-    label_categoria.grid(row=2, column=0, sticky="w", padx=5, pady=5)
+    label_categoria.grid(row=3, column=2, sticky="w", padx=5, pady=5)
     entries["categoria"] = ttk.Combobox(
         frame_form_interno,
         font=("Arial", 10),
-        width=18,
+        width=13,
         values=constantes.CATEGORIAS,
         state="readonly"
     )
-    entries["categoria"].grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    entries["categoria"].grid(row=3, column=3, padx=5, pady=5, sticky="w")
     if constantes.CATEGORIAS:
         entries["categoria"].current(0)
     
@@ -280,11 +376,81 @@ def mostrar_inventario():
     # Deshabilitar entries en modo consulta
     if modo_consulta:
         entries["nombre"].config(state="disabled")
+        entries["precio_costo"].config(state="disabled")
         entries["precio"].config(state="disabled")
         entries["stock"].config(state="disabled")
         entries["categoria"].config(state="disabled")
+        entries["ganancia_custom"].config(state="disabled")
 
 
+def aplicar_ganancia(entries, porcentaje):
+    """
+    Aplica un porcentaje de ganancia al precio costo
+    
+    Parámetros:
+        entries: Diccionario con los Entry widgets
+        porcentaje: Porcentaje de ganancia a aplicar
+    """
+    precio_costo = entries["precio_costo"].get().strip()
+    
+    if not precio_costo:
+        messagebox.showwarning("Advertencia", "Primero ingrese el precio de costo")
+        entries["precio_costo"].focus()
+        return
+    
+    if not validadores.validar_precio(precio_costo):
+        messagebox.showerror("Error", "El precio de costo debe ser un número mayor a 0")
+        return
+    
+    # Calcular precio de venta
+    precio_venta = inventario.calcular_precio_con_ganancia(precio_costo, porcentaje)
+    
+    # Actualizar campo de precio
+    entries["precio"].delete(0, tk.END)
+    entries["precio"].insert(0, f"{precio_venta:.2f}")
+
+
+def aplicar_ganancia_personalizada(entries):
+    """
+    Aplica un porcentaje personalizado de ganancia
+    
+    Parámetros:
+        entries: Diccionario con los Entry widgets
+    """
+    precio_costo = entries["precio_costo"].get().strip()
+    ganancia_custom = entries["ganancia_custom"].get().strip()
+    
+    if not precio_costo:
+        messagebox.showwarning("Advertencia", "Primero ingrese el precio de costo")
+        entries["precio_costo"].focus()
+        return
+    
+    if not ganancia_custom:
+        messagebox.showwarning("Advertencia", "Ingrese el porcentaje de ganancia")
+        entries["ganancia_custom"].focus()
+        return
+    
+    if not validadores.validar_precio(precio_costo):
+        messagebox.showerror("Error", "El precio de costo debe ser un número mayor a 0")
+        return
+    
+    if not formateadores.validar_numero(ganancia_custom):
+        messagebox.showerror("Error", "El porcentaje debe ser un número válido")
+        return
+    
+    porcentaje = float(ganancia_custom)
+    
+    if porcentaje < 0:
+        messagebox.showerror("Error", "El porcentaje no puede ser negativo")
+        return
+    
+    # Calcular precio de venta
+    precio_venta = inventario.calcular_precio_con_ganancia(precio_costo, porcentaje)
+    
+    # Actualizar campo de precio
+    entries["precio"].delete(0, tk.END)
+    entries["precio"].insert(0, f"{precio_venta:.2f}")
+    
 def cargar_productos_en_tabla(tabla):
     """
     Carga los productos en la tabla
@@ -327,7 +493,6 @@ def cargar_productos_en_tabla(tabla):
     
     # Mostrar cantidad total
     print(f"Total de productos: {len(productos)}")
-
 
 def buscar_y_actualizar(entry_buscar, tabla):
     """
@@ -376,7 +541,6 @@ def buscar_y_actualizar(entry_buscar, tabla):
     
     messagebox.showinfo("Búsqueda", f"Se encontraron {len(productos)} producto(s)")
 
-
 def cargar_producto_en_formulario(tabla, entries):
     """
     Carga los datos del producto seleccionado en el formulario
@@ -404,6 +568,7 @@ def cargar_producto_en_formulario(tabla, entries):
     # Cargar datos
     entries["id"].set(producto["id"])
     entries["nombre"].insert(0, producto["nombre"])
+    # Por ahora no tenemos precio_costo guardado, mostramos precio de venta
     entries["precio"].insert(0, str(producto["precio"]))
     entries["stock"].insert(0, str(producto["stock"]))
     
@@ -413,7 +578,6 @@ def cargar_producto_en_formulario(tabla, entries):
         entries["categoria"].current(index)
     except ValueError:
         pass
-
 
 def agregar_producto_ui(entries, tabla):
     """
@@ -453,7 +617,6 @@ def agregar_producto_ui(entries, tabla):
         cargar_productos_en_tabla(tabla)
     else:
         messagebox.showerror("Error", "No se pudo agregar el producto")
-
 
 def modificar_producto_ui(tabla, entries):
     """
@@ -514,10 +677,11 @@ def modificar_producto_ui(tabla, entries):
     else:
         messagebox.showerror("Error", "No se pudo modificar el producto")
 
-
 def eliminar_producto_ui(tabla):
     """
     Elimina un producto seleccionado
+    Si está ACTIVO: lo marca como INACTIVO
+    Si está INACTIVO: lo elimina PERMANENTEMENTE
     
     Parámetros:
         tabla: Tabla de productos
@@ -533,23 +697,51 @@ def eliminar_producto_ui(tabla):
     valores = item["values"]
     id_producto = valores[0]
     nombre_producto = valores[1]
+    estado_producto = valores[5]  # "Activo" o "Inactivo"
     
-    # Confirmar eliminación
-    respuesta = messagebox.askyesno(
-        "Confirmar Eliminación",
-        f"¿Está seguro que desea eliminar el producto:\n\n'{nombre_producto}'?\n\nEsta acción marcará el producto como inactivo."
-    )
+    # Determinar acción según el estado
+    if estado_producto == "Activo":
+        # Confirmar inactivación
+        respuesta = messagebox.askyesno(
+            "Confirmar Inactivación",
+            f"¿Está seguro que desea INACTIVAR el producto:\n\n'{nombre_producto}'?\n\n"
+            f"El producto quedará marcado como inactivo pero no se borrará.\n"
+            f"Puede volver a eliminarlo para borrarlo permanentemente."
+        )
+        
+        if not respuesta:
+            return
+        
+        # Eliminar producto (lo marca como inactivo)
+        resultado = inventario.eliminar_producto(id_producto)
+        
+        if resultado == "inactivado":
+            messagebox.showinfo("Éxito", f"Producto '{nombre_producto}' marcado como INACTIVO")
+            cargar_productos_en_tabla(tabla)
+        else:
+            messagebox.showerror("Error", "No se pudo inactivar el producto")
     
-    if not respuesta:
-        return
-    
-    # Eliminar producto
-    if inventario.eliminar_producto(id_producto):
-        messagebox.showinfo("Éxito", "Producto eliminado correctamente")
-        cargar_productos_en_tabla(tabla)
-    else:
-        messagebox.showerror("Error", "No se pudo eliminar el producto")
-
+    else:  # estado_producto == "Inactivo"
+        # Confirmar eliminación permanente
+        respuesta = messagebox.askyesno(
+            "⚠️ CONFIRMAR ELIMINACIÓN PERMANENTE ⚠️",
+            f"¿Está seguro que desea ELIMINAR PERMANENTEMENTE el producto:\n\n'{nombre_producto}'?\n\n"
+            f"Esta acción NO SE PUEDE DESHACER.\n"
+            f"El producto se borrará completamente del sistema.",
+            icon="warning"
+        )
+        
+        if not respuesta:
+            return
+        
+        # Eliminar producto permanentemente
+        resultado = inventario.eliminar_producto(id_producto)
+        
+        if resultado == "eliminado":
+            messagebox.showinfo("Éxito", f"Producto '{nombre_producto}' ELIMINADO PERMANENTEMENTE")
+            cargar_productos_en_tabla(tabla)
+        else:
+            messagebox.showerror("Error", "No se pudo eliminar el producto")
 
 def limpiar_formulario(entries):
     """
@@ -560,7 +752,9 @@ def limpiar_formulario(entries):
     """
     entries["id"].set(0)
     entries["nombre"].delete(0, tk.END)
+    entries["precio_costo"].delete(0, tk.END)
     entries["precio"].delete(0, tk.END)
     entries["stock"].delete(0, tk.END)
+    entries["ganancia_custom"].delete(0, tk.END)
     if constantes.CATEGORIAS:
         entries["categoria"].current(0)

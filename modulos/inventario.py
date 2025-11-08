@@ -179,16 +179,47 @@ def actualizar_producto(id_producto, datos_nuevos):
 
 def eliminar_producto(id_producto):
     """
-    Elimina (deshabilita) un producto
+    Elimina (deshabilita) un producto ACTIVO o borra permanentemente un producto INACTIVO
     
     Parámetros:
         id_producto (int): ID del producto
     
     Retorna:
-        bool: True si se eliminó, False si hubo error
+        str: "inactivado" si se marcó como inactivo, "eliminado" si se borró permanentemente
+        None: Si hubo error
     """
-    # No eliminamos físicamente, solo marcamos como inactivo
-    return actualizar_producto(id_producto, {"activo": False})
+    _inicializar_archivo_productos()
+    
+    # Obtener el producto
+    producto = obtener_producto_por_id(id_producto)
+    if not producto:
+        return None
+    
+    # Si está ACTIVO, marcarlo como INACTIVO
+    if producto.get("activo", True):
+        if actualizar_producto(id_producto, {"activo": False}):
+            return "inactivado"
+        else:
+            return None
+    
+    # Si está INACTIVO, eliminarlo permanentemente
+    else:
+        # Leer productos
+        datos = leer_json(RUTA_PRODUCTOS)
+        if not datos:
+            return None
+        
+        productos = datos.get("productos", [])
+        
+        # Filtrar el producto (eliminarlo de la lista)
+        productos_nuevos = [p for p in productos if p["id"] != id_producto]
+        
+        # Guardar cambios
+        datos["productos"] = productos_nuevos
+        if escribir_json(RUTA_PRODUCTOS, datos):
+            return "eliminado"
+        else:
+            return None
 
 
 def buscar_productos(termino):
@@ -280,3 +311,27 @@ def listar_productos_bajo_stock(minimo=10):
     """
     productos = listar_productos_activos()
     return [p for p in productos if p["stock"] < minimo]
+
+
+def calcular_precio_con_ganancia(precio_costo, porcentaje_ganancia):
+    """
+    Calcula el precio de venta aplicando un porcentaje de ganancia
+    
+    Parámetros:
+        precio_costo (float): Precio de costo del producto
+        porcentaje_ganancia (float): Porcentaje de ganancia a aplicar
+    
+    Retorna:
+        float: Precio de venta con ganancia
+    """
+    try:
+        costo = float(precio_costo)
+        ganancia = float(porcentaje_ganancia)
+        
+        if costo <= 0 or ganancia < 0:
+            return 0
+        
+        precio_venta = costo * (1 + ganancia / 100)
+        return round(precio_venta, 2)
+    except (ValueError, TypeError):
+        return 0

@@ -12,9 +12,8 @@ def abrir_modulo_inventario():
     """
     Abre el módulo de inventario
     """
-    messagebox.showinfo("Inventario", "Módulo de Inventario\n(Próximamente en FASE 3)")
-    # from interfaz import inventario_ui
-    # inventario_ui.mostrar_inventario()
+    from interfaz import inventario_ui
+    inventario_ui.mostrar_inventario()
 
 
 def abrir_modulo_ventas():
