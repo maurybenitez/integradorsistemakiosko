@@ -1,0 +1,76 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Coca Cola 500ml",
+      "precio": 1500.00,
+      "stock": 50,
+      "categoria": "Bebidas",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 2,
+      "nombre": "Alfajor Milka",
+      "precio": 850.50,
+      "stock": 120,
+      "categoria": "Golosinas",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 3,
+      "nombre": "Cigarrillos Marlboro Box",
+      "precio": 3200.00,
+      "stock": 25,
+      "categoria": "Cigarrillos",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 4,
+      "nombre": "Agua Mineral 500ml",
+      "precio": 800.00,
+      "stock": 80,
+      "categoria": "Bebidas",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 5,
+      "nombre": "Chicles Beldent",
+      "precio": 350.00,
+      "stock": 200,
+      "categoria": "Golosinas",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 6,
+      "nombre": "Pan Lactal Bimbo",
+      "precio": 2100.00,
+      "stock": 15,
+      "categoria": "Almacén",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 7,
+      "nombre": "Papel Higiénico Elite x4",
+      "precio": 3500.00,
+      "stock": 8,
+      "categoria": "Limpieza",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    },
+    {
+      "id": 8,
+      "nombre": "Galletitas Oreo",
+      "precio": 1650.00,
+      "stock": 45,
+      "categoria": "Golosinas",
+      "activo": true,
+      "fecha_alta": "01/11/2025"
+    }
+  ]
+}

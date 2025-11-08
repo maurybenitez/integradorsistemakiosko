@@ -1,0 +1,22 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre_usuario": "admin",
+      "contrasena": "admin123",
+      "nombre_completo": "Administrador del Sistema",
+      "rol": "ADMINISTRADOR",
+      "activo": true,
+      "fecha_creacion": "01/11/2025 10:00:00"
+    },
+    {
+      "id": 2,
+      "nombre_usuario": "cajero1",
+      "contrasena": "cajero123",
+      "nombre_completo": "Rodrigo Pérez",
+      "rol": "CAJERO",
+      "activo": true,
+      "fecha_creacion": "01/11/2025 10:15:00"
+    }
+  ]
+}

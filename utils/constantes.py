@@ -1,0 +1,69 @@
+"""
+CONSTANTES DEL SISTEMA
+Define todos los valores constantes usados en el proyecto
+"""
+
+#RUTAS DE ARCHIVOS JSON
+RUTA_USUARIOS = "data/usuarios.json"
+RUTA_PRODUCTOS = "data/productos.json"
+RUTA_VENTAS = "data/ventas.json"
+RUTA_CAJA = "data/caja.json"
+RUTA_CUENTAS_CORRIENTES = "data/cuentas_corrientes.json"
+RUTA_CONFIG = "data/config.json"
+
+
+#ROLES DE USUARIO
+ROL_ADMINISTRADOR = "ADMINISTRADOR"
+ROL_CAJERO = "CAJERO"
+
+
+#ESTADOS
+ESTADO_ACTIVO = "ACTIVO"
+ESTADO_INACTIVO = "INACTIVO"
+ESTADO_ABIERTA = "ABIERTA"
+ESTADO_CERRADA = "CERRADA"
+
+
+#CATEGORÍAS DE PRODUCTOS
+CATEGORIAS = [
+    "Bebidas",
+    "Golosinas",
+    "Cigarrillos",
+    "Almacén",
+    "Limpieza",
+    "Otros"
+]
+
+
+#MEDIOS DE PAGO
+PAGO_EFECTIVO = "EFECTIVO"
+PAGO_CUENTA_CORRIENTE = "CUENTA_CORRIENTE"
+
+
+#TIPOS DE MOVIMIENTO CAJA
+MOVIMIENTO_VENTA = "VENTA"
+MOVIMIENTO_PAGO_CUENTA = "PAGO_CUENTA"
+MOVIMIENTO_RETIRO = "RETIRO"
+MOVIMIENTO_INGRESO = "INGRESO"
+
+
+#COLORES INTERFAZ
+COLOR_PRIMARIO = "#2C3E50"
+COLOR_SECUNDARIO = "#3498DB"
+COLOR_EXITO = "#27AE60"
+COLOR_ERROR = "#E74C3C"
+COLOR_ADVERTENCIA = "#F39C12"
+COLOR_FONDO = "#ECF0F1"
+
+
+#TAMAÑOS DE VENTANA
+VENTANA_LOGIN = "400x300"
+VENTANA_MENU = "800x600"
+VENTANA_MODULO = "900x700"
+
+
+#VARIABLES GLOBALES
+# Estas variables se modifican durante la ejecución
+usuario_actual = None
+caja_abierta = False
+id_caja_actual = None

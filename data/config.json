@@ -1,0 +1,12 @@
+{
+  "nombre_kiosko": "Kiosko El Rodri",
+  "direccion": "Av. Principal 123",
+  "telefono": "3704-999888",
+  "stock_minimo_alerta": 10,
+  "limite_credito_default": 20000.00,
+  "iva_incluido": true,
+  "moneda": "ARS",
+  "simbolo_moneda": "$",
+  "version_sistema": "1.0.0",
+  "fecha_instalacion": "01/11/2025"
+}

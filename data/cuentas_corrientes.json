@@ -1,0 +1,14 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nombre": "Guillermo Bassi",
+      "telefono": "3704-123456",
+      "limite_credito": 50000.00,
+      "deuda_actual": 0,
+      "activo": true,
+      "fecha_alta": "01/11/2025",
+      "movimientos": []
+    }
+  ]
+}
